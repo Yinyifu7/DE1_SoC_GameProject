@@ -36,6 +36,7 @@ void level_difficulty_increment();
 void show_HEX();
 void draw_helicopter();
 void check_end_game();
+void check_collect_coin_event();
 void control_move();
 void draw_helicopter_upgrade();
 void draw_fighter();
@@ -88,9 +89,9 @@ bool change_shape = false;
 int change_object_count = 0;
 // control moving
 
-volatile int * SW_ptr         = 0xFF200040;     // SW slide switch address
-volatile int * LEDR_ptr       = 0xFF200000;    // red LED address
-volatile int * KEY_ptr       = 0xFF200050;    // red LED address
+volatile int * SW_ptr  = (volatile int *) 0xFF200040;  // SW slide switch address
+volatile int * LEDR_ptr = (volatile int *) 0xFF200000;  // red LED address
+volatile int * KEY_ptr = (volatile int *) 0xFF200050;   // push-button key address
 int switch_value = 0;
 int key_value = 0;
 bool move_up = false;
@@ -756,8 +757,13 @@ void draw_helicopter(){
 }	
 
 void show_HEX(){
-	volatile int * HEX3_0_ptr      = 0xFF200020;     // HEX3_HEX0 addressint value;
-	volatile int * HEX5_4_ptr      = 0xFF200030;     // HEX5_HEX4 addressint value;
+	// Define base addresses for the HEX displays as constants
+	#define HEX3_0_BASE 0xFF200020 // Base address for HEX3_HEX0
+	#define HEX5_4_BASE 0xFF200030 // Base address for HEX5_HEX4
+
+	// Create pointers to the HEX displays
+	volatile int * const HEX3_0_ptr = (volatile int * const) HEX3_0_BASE; // Pointer to HEX3_HEX0 display
+	volatile int * const HEX5_4_ptr = (volatile int * const) HEX5_4_BASE; // Pointer to HEX5_HEX4 display
 	*(HEX3_0_ptr) = seg7[value1 & 0xF] |  seg7[value2 & 0xF] << 8 | seg7[16] << 16 | seg7[score_0 & 0xF] << 24; 
 	*(HEX5_4_ptr) = seg7[score_1 & 0xF] |  seg7[score_2 & 0xF] << 8 | seg7[16] << 16; 
 }
